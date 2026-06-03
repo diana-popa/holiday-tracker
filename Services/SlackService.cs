@@ -10,7 +10,7 @@ public class SlackService
         _webhookUrl = "PASTE_YOUR_FULL_WEBHOOK_URL_HERE";
         //_webhookUrl = Environment.GetEnvironmentVariable("SLACK_WEBHOOK_URL")
         //?? config["Slack:WebhookUrl"];
-        //_http = http;
+        _http = http;
     }
 
     public async Task NotifyHolidayAdded(string person, string date)
