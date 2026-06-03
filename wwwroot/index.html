@@ -173,8 +173,9 @@
             }
 
             .day-cell.today {
-                border-color: #4D96FF88;
+                border-color: #4D96FF;
                 background: #1a243e;
+                box-shadow: 0 0 0 2px #4D96FF44;
             }
 
         .day-num {
@@ -449,6 +450,9 @@
         }
 
         async function removeDay(person, key) {
+            const [y, m, d] = key.split('-').map(Number);
+            const friendly = `${d} ${MONTHS[m - 1].slice(0, 3)} ${y}`;
+            if (!confirm(`Remove ${person}'s holiday on ${friendly}?`)) return;
             await fetch(`/api/holiday?person=${encodeURIComponent(person)}&date=${key}`, { method: 'DELETE' });
             await load();
         }
@@ -484,9 +488,11 @@
             el.innerHTML = team.map(name => {
                 const color = personColor(name);
                 const isActive = activePerson === name;
-                return `<button class="chip ${isActive ? 'active' : ''}"
+                const count = holidays.filter(h => h.person === name).length;
+                const label = count > 0 ? `${name} <span style="font-size:11px;opacity:0.8">(${count}d)</span>` : name;
+                return `<button class="chip ${isActive ? 'active' : ''}" 
                 style="border-color:${color};color:${isActive ? '#fff' : color};background:${isActive ? color : '#1e1e2e'}"
-                onclick="selectPerson('${name}')">${name}</button>`;
+                onclick="selectPerson('${name}')">${label}</button>`;
             }).join('');
             document.getElementById('hint').textContent = activePerson
                 ? `Click days to toggle your holidays`
@@ -546,7 +552,7 @@
             const el = document.getElementById('list-content');
             if (holidays.length === 0) { el.innerHTML = '<div class="empty">No holidays logged yet.</div>'; return; }
             el.innerHTML = team.map(name => {
-                const days = holidays.filter(h => h.person === name).map(h => h.date).sort();
+                const days = holidays.filter(h => h.person === name).map(h => h.date).sort((a, b) => new Date(a) - new Date(b));
                 if (!days.length) return '';
                 const color = personColor(name);
                 return `<div class="person-block">
