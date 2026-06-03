@@ -355,6 +355,11 @@
             border: 1px solid #2a3a2a;
         }
 
+        .weekend.bank-holiday {
+            background: #14141f;
+            opacity: 0.5;
+        }
+
         .bank-holiday-dot {
             width: 6px;
             height: 6px;
@@ -438,6 +443,47 @@
     </div>
 
     <script>
+        const INDIA_HOLIDAYS = {
+            // 2026
+            "2026-01-26": "🇮🇳 Republic Day",
+            "2026-03-20": "🇮🇳 Holi",
+            "2026-04-02": "🇮🇳 Good Friday",
+            "2026-04-14": "🇮🇳 Dr. Ambedkar Jayanti",
+            "2026-04-30": "🇮🇳 Eid ul-Fitr",
+            "2026-07-07": "🇮🇳 Eid ul-Adha",
+            "2026-08-15": "🇮🇳 Independence Day",
+            "2026-08-29": "🇮🇳 Janmashtami",
+            "2026-10-02": "🇮🇳 Gandhi Jayanti",
+            "2026-10-20": "🇮🇳 Dussehra",
+            "2026-11-09": "🇮🇳 Diwali",
+            "2026-12-25": "🇮🇳 Christmas Day",
+            // 2027
+            "2027-01-26": "🇮🇳 Republic Day",
+            "2027-03-10": "🇮🇳 Holi",
+            "2027-03-26": "🇮🇳 Good Friday",
+            "2027-04-14": "🇮🇳 Dr. Ambedkar Jayanti",
+            "2027-04-19": "🇮🇳 Eid ul-Fitr",
+            "2027-06-27": "🇮🇳 Eid ul-Adha",
+            "2027-08-15": "🇮🇳 Independence Day",
+            "2027-08-18": "🇮🇳 Janmashtami",
+            "2027-10-02": "🇮🇳 Gandhi Jayanti",
+            "2027-10-09": "🇮🇳 Dussehra",
+            "2027-10-29": "🇮🇳 Diwali",
+            "2027-12-25": "🇮🇳 Christmas Day",
+            // 2028
+            "2028-01-26": "🇮🇳 Republic Day",
+            "2028-02-28": "🇮🇳 Holi",
+            "2028-04-13": "🇮🇳 Good Friday",
+            "2028-04-14": "🇮🇳 Dr. Ambedkar Jayanti",
+            "2028-04-07": "🇮🇳 Eid ul-Fitr",
+            "2028-06-15": "🇮🇳 Eid ul-Adha",
+            "2028-08-15": "🇮🇳 Independence Day",
+            "2028-09-06": "🇮🇳 Janmashtami",
+            "2028-10-02": "🇮🇳 Gandhi Jayanti",
+            "2028-10-26": "🇮🇳 Dussehra",
+            "2028-11-15": "🇮🇳 Diwali",
+            "2028-12-25": "🇮🇳 Christmas Day"
+        };
         let bankHolidays = {}; // { "YYYY-MM-DD": ["🇬🇧 Christmas Day", "🇷🇴 Craciun"] }
         const COLORS = ["#FF6B6B", "#4ECDC4", "#FFD93D", "#6BCB77", "#4D96FF", "#FF6FC8", "#F4A261", "#A8DADC", "#E63946", "#2EC4B6", "#CBAC88", "#9B5DE5"];
         const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
@@ -509,8 +555,14 @@
             if (v === 'settings') renderSettings();
         }
 
-        function prevMonth() { if (month === 0) { month = 11; year--; } else month--; renderCalendar(); }
-        function nextMonth() { if (month === 11) { month = 0; year++; } else month++; renderCalendar(); }
+        function prevMonth() {
+            if (month === 0) { month = 11; year--; loadBankHolidays(year).then(renderCalendar); }
+            else { month--; renderCalendar(); }
+        }
+        function nextMonth() {
+            if (month === 11) { month = 0; year++; loadBankHolidays(year).then(renderCalendar); }
+            else { month++; renderCalendar(); }
+        }
 
         function renderChips() {
             const el = document.getElementById('chips');
@@ -638,10 +690,18 @@
 
         const COUNTRY_FLAGS = { RO: '🇷🇴', GB: '🇬🇧', IN: '🇮🇳' };
 
-        async function loadBankHolidays() {
-            const year = new Date().getFullYear();
-            const countries = ['RO', 'GB', 'IN'];
+        async function loadBankHolidays(yearToLoad) {
+            const year = yearToLoad || new Date().getFullYear();
+            const countries = ['RO', 'GB'];
             bankHolidays = {};
+
+            // Load India hardcoded holidays
+            Object.entries(INDIA_HOLIDAYS).forEach(([date, name]) => {
+                if (!bankHolidays[date]) bankHolidays[date] = [];
+                bankHolidays[date].push(name);
+            });
+
+            // Load RO and GB from API
             await Promise.all(countries.map(async country => {
                 try {
                     const res = await fetch(`https://date.nager.at/api/v3/PublicHolidays/${year}/${country}`);
