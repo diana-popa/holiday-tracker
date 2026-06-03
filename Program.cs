@@ -47,4 +47,5 @@ timer.Elapsed += async (_, _) =>
 };
 timer.Start();
 
-app.Run($"http://0.0.0.0:{Environment.GetEnvironmentVariable("PORT") ?? "8080"}");
+var port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
+app.Run($"http://0.0.0.0:{port}");
