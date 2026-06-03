@@ -54,6 +54,37 @@ public class SlackServiceTests
 
         Assert.AreEqual(1, handler.CallCount);
     }
+
+    [TestMethod]
+    public async Task SendWeeklySummary_WhenHolidaysExist_ShouldSendMessage()
+    {
+        var handler = new MockHttpMessageHandler(HttpStatusCode.OK);
+        var http = new HttpClient(handler);
+        var service = CreateService(http);
+
+        var monday = DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek + 1);
+        var holidays = new List<dynamic>
+    {
+        new HolidayTracker.Models.Holiday { Person = "Alice", Date = monday.ToString("yyyy-MM-dd") },
+        new HolidayTracker.Models.Holiday { Person = "Bob", Date = monday.ToString("yyyy-MM-dd") }
+    };
+
+        await service.SendWeeklySummary(new List<string> { "Alice", "Bob" }, holidays);
+
+        Assert.AreEqual(1, handler.CallCount);
+    }
+
+    [TestMethod]
+    public async Task NotifyHolidayAdded_ShouldFormatDateCorrectly()
+    {
+        var handler = new MockHttpMessageHandler(HttpStatusCode.OK);
+        var http = new HttpClient(handler);
+        var service = CreateService(http);
+
+        await service.NotifyHolidayAdded("Alice", "2024-12-25");
+
+        Assert.AreEqual(1, handler.CallCount);
+    }
 }
 
 public class MockHttpMessageHandler : HttpMessageHandler

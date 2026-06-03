@@ -349,6 +349,34 @@
             font-weight: 700;
             margin-bottom: 20px;
         }
+
+        .bank-holiday {
+            background: #1a2a1a;
+            border: 1px solid #2a3a2a;
+        }
+
+        .bank-holiday-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #6BCB77;
+            display: inline-block;
+            margin-right: 3px;
+        }
+
+        .bh-tooltip {
+            position: fixed;
+            background: #2a3a2a;
+            border: 1px solid #3a4a3a;
+            border-radius: 8px;
+            padding: 8px 12px;
+            z-index: 100;
+            pointer-events: none;
+            font-size: 12px;
+            color: #9debb0;
+            max-width: 200px;
+        }
+
     </style>
 </head>
 <body>
@@ -410,6 +438,7 @@
     </div>
 
     <script>
+        let bankHolidays = {}; // { "YYYY-MM-DD": ["🇬🇧 Christmas Day", "🇷🇴 Craciun"] }
         const COLORS = ["#FF6B6B", "#4ECDC4", "#FFD93D", "#6BCB77", "#4D96FF", "#FF6FC8", "#F4A261", "#A8DADC", "#E63946", "#2EC4B6", "#CBAC88", "#9B5DE5"];
         const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
         const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
@@ -527,25 +556,34 @@
             for (let i = 0; i < firstDay; i++) html += '<div></div>';
             for (let d = 1; d <= daysInMonth; d++) {
                 const dow = (firstDay + d - 1) % 7;
-                const isWeekend = dow === 0 || dow === 6;
+                const isWeekend = (dow === 0 || dow === 6);
                 const isToday = d === today.getDate() && month === today.getMonth() && year === today.getFullYear();
                 const people = getDayPeople(year, month, d);
+                const key = toKey(year, month, d);
+                const bh = bankHolidays[key] || [];
                 const dots = people.slice(0, 4).map(p => `<span class="dot" style="background:${personColor(p)}" title="${p}"></span>`).join('');
-                html += `<div class="day-cell ${isWeekend ? 'weekend' : ''} ${isToday ? 'today' : ''}"
-                ${!isWeekend ? `onclick="toggleDay(${year},${month},${d})"` : ''}>
+                html += `<div class="day-cell ${isWeekend ? 'weekend' : ''} ${isToday ? 'today' : ''} ${bh.length ? 'bank-holiday' : ''}" 
+                 ${!isWeekend ? `onclick="toggleDay(${year},${month},${d})"` : ''}
+                 ${bh.length ? `title="${bh.join(', ')}"` : ''}>
                 <span class="day-num">${d}</span>
+                ${bh.length ? `<div style="font-size:10px;color:#6BCB77;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${bh[0]}</div>` : ''}
                 <div class="dots">${dots}</div>
                 ${people.length > 1 ? '<div class="overlap-dot"></div>' : ''}
-              </div>`;
+                </div>`;
             }
             document.getElementById('cal-grid').innerHTML = html;
 
             // Legend
+            const bhCount = Object.keys(bankHolidays).filter(k => {
+                const [y, m] = k.split('-').map(Number);
+                return y === year && m === month + 1;
+            }).length;
+            const bhLegend = bhCount > 0 ? `<div class="legend-item"><span style="width:10px;height:10px;border-radius:50%;background:#6BCB77;display:inline-block"></span>Bank Holiday</div>` : '';
             const legendHtml = team.filter(name => holidays.some(h => h.person === name)).map(name => {
                 const count = holidays.filter(h => h.person === name).length;
                 return `<div class="legend-item"><span class="dot" style="background:${personColor(name)}"></span>${name}<span class="legend-count">${count}d</span></div>`;
             }).join('');
-            document.getElementById('legend').innerHTML = legendHtml;
+            document.getElementById('legend').innerHTML = bhLegend + legendHtml;
         }
 
         function renderList() {
@@ -579,6 +617,7 @@
         }
 
         function render() { renderChips(); renderCalendar(); }
+        loadBankHolidays().then(() => load());
 
         function closeWelcome() {
             document.getElementById('welcome-modal').style.display = 'none';
@@ -596,6 +635,27 @@
         if (!localStorage.getItem('visited')) {
             document.getElementById('welcome-modal').style.display = 'flex';
         }
+
+        const COUNTRY_FLAGS = { RO: '🇷🇴', GB: '🇬🇧', IN: '🇮🇳' };
+
+        async function loadBankHolidays() {
+            const year = new Date().getFullYear();
+            const countries = ['RO', 'GB', 'IN'];
+            bankHolidays = {};
+            await Promise.all(countries.map(async country => {
+                try {
+                    const res = await fetch(`https://date.nager.at/api/v3/PublicHolidays/${year}/${country}`);
+                    const data = await res.json();
+                    data.forEach(h => {
+                        if (!bankHolidays[h.date]) bankHolidays[h.date] = [];
+                        bankHolidays[h.date].push(`${COUNTRY_FLAGS[country]} ${h.localName}`);
+                    });
+                } catch (e) {
+                    console.log(`Failed to load bank holidays for ${country}`);
+                }
+            }));
+        }
+
         load();
     </script>
     <!-- Collapsible help section -->

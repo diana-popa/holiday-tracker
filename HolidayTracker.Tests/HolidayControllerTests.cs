@@ -101,4 +101,35 @@ public class HolidayControllerTests
 
         Assert.IsInstanceOfType(result, typeof(OkResult));
     }
+    [TestMethod]
+    public async Task Add_DuplicateHoliday_ShouldStillReturnOk()
+    {
+        var (controller, _) = CreateController();
+        var holiday = new Holiday { Person = "Alice", Date = "2024-12-25" };
+
+        await controller.Add(holiday);
+        var result = await controller.Add(holiday);
+
+        Assert.IsInstanceOfType(result, typeof(OkResult));
+    }
+
+    [TestMethod]
+    public void Remove_NonExistentHoliday_ShouldReturnOk()
+    {
+        var (controller, _) = CreateController();
+
+        var result = controller.Remove("Alice", "2024-12-25");
+
+        Assert.IsInstanceOfType(result, typeof(OkResult));
+    }
+
+    [TestMethod]
+    public void RemoveMember_NonExistentMember_ShouldReturnOk()
+    {
+        var (controller, _) = CreateController();
+
+        var result = controller.RemoveMember("Nobody");
+
+        Assert.IsInstanceOfType(result, typeof(OkResult));
+    }
 }

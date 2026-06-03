@@ -133,4 +133,67 @@ public class HolidayStoreTests
 
         CollectionAssert.AreEqual(new[] { "Alice", "Bob" }, result);
     }
+
+    [TestMethod]
+    public void GetAll_WhenEmpty_ShouldReturnEmptyList()
+    {
+        var ctx = CreateInMemoryContext();
+        var store = new HolidayStore(ctx);
+
+        var result = store.GetAll();
+
+        Assert.AreEqual(0, result.Count);
+    }
+
+    [TestMethod]
+    public void GetTeam_WhenEmpty_ShouldReturnEmptyList()
+    {
+        var ctx = CreateInMemoryContext();
+        var store = new HolidayStore(ctx);
+
+        var result = store.GetTeam();
+
+        Assert.AreEqual(0, result.Count);
+    }
+
+    [TestMethod]
+    public void RemoveTeamMember_NonExistent_ShouldNotThrow()
+    {
+        var ctx = CreateInMemoryContext();
+        var store = new HolidayStore(ctx);
+
+        try
+        {
+            store.RemoveTeamMember("Nobody");
+        }
+        catch (Exception ex)
+        {
+            Assert.Fail($"Expected no exception but got: {ex.Message}");
+        }
+    }
+
+    [TestMethod]
+    public void Add_MultipleHolidaysForSamePerson_ShouldPersistAll()
+    {
+        var ctx = CreateInMemoryContext();
+        var store = new HolidayStore(ctx);
+
+        store.Add(new Holiday { Person = "Alice", Date = "2024-12-24" });
+        store.Add(new Holiday { Person = "Alice", Date = "2024-12-25" });
+        store.Add(new Holiday { Person = "Alice", Date = "2024-12-26" });
+
+        Assert.AreEqual(3, ctx.Holidays.Count());
+    }
+
+    [TestMethod]
+    public void Add_SameDateDifferentPeople_ShouldPersistAll()
+    {
+        var ctx = CreateInMemoryContext();
+        var store = new HolidayStore(ctx);
+
+        store.Add(new Holiday { Person = "Alice", Date = "2024-12-25" });
+        store.Add(new Holiday { Person = "Bob", Date = "2024-12-25" });
+
+        Assert.AreEqual(2, ctx.Holidays.Count());
+    }
 }
