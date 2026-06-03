@@ -26,10 +26,10 @@ public class SlackService
 
         var offThisWeek = holidays
         .Where(h => {
-            var d = DateTime.Parse((string)h.date);
+            var d = DateTime.Parse((string)h.Date);
             return d >= monday && d <= friday;
         })
-        .GroupBy(h => (string)h.person)
+        .GroupBy(h => (string)h.Person)
         .ToList();
 
         if (!offThisWeek.Any())
@@ -39,7 +39,7 @@ public class SlackService
         }
 
         var lines = offThisWeek.Select(g => {
-            var days = g.Select(h => DateTime.Parse((string)h.date).ToString("ddd d MMM")).ToList();
+            var days = g.Select(h => DateTime.Parse((string)h.Date).ToString("ddd d MMM")).ToList();
             return $"- *{g.Key}*: {string.Join(", ", days)}";
         });
 

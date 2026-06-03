@@ -351,6 +351,22 @@
     </style>
 </head>
 <body>
+    <!-- First visit modal -->
+    <div id="welcome-modal" style="display:none;position:fixed;inset:0;background:#00000088;z-index:200;align-items:center;justify-content:center">
+        <div style="background:#1a1a2e;border:1px solid #2a2a3e;border-radius:12px;padding:28px;max-width:420px;width:90%">
+            <h2 style="color:#fff;margin-bottom:16px;font-size:18px">👋 Welcome to Team Holidays!</h2>
+            <div style="color:#bbb;font-size:14px;line-height:1.8">
+                <p style="margin-bottom:10px">Here's how to use the app:</p>
+                <p>1️⃣ <strong style="color:#fff">Pick your name</strong> from the bar at the top</p>
+                <p>2️⃣ <strong style="color:#fff">Click or drag</strong> days on the calendar to add holidays</p>
+                <p>3️⃣ <strong style="color:#fff">Click again</strong> on a day to remove it</p>
+                <p>4️⃣ <strong style="color:#fff">Weekends</strong> are skipped automatically</p>
+                <p>5️⃣ <strong style="color:#fff">Red dot</strong> on a day means overlap with a colleague</p>
+                <p style="margin-top:10px">6️⃣ Use <strong style="color:#fff">⚙️ Team</strong> to add or remove team members</p>
+            </div>
+            <button onclick="closeWelcome()" style="margin-top:20px;background:#4D96FF;border:none;color:#fff;padding:10px 24px;border-radius:8px;cursor:pointer;font-weight:600;width:100%">Got it!</button>
+        </div>
+    </div>
     <header>
         <h1>🏖 Team Holidays</h1>
         <div class="tabs">
@@ -393,171 +409,203 @@
     </div>
 
     <script>
-  const COLORS = ["#FF6B6B","#4ECDC4","#FFD93D","#6BCB77","#4D96FF","#FF6FC8","#F4A261","#A8DADC","#E63946","#2EC4B6","#CBAC88","#9B5DE5"];
-  const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
-  const DAYS = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+        const COLORS = ["#FF6B6B", "#4ECDC4", "#FFD93D", "#6BCB77", "#4D96FF", "#FF6FC8", "#F4A261", "#A8DADC", "#E63946", "#2EC4B6", "#CBAC88", "#9B5DE5"];
+        const MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        const DAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 
-  let team = [], holidays = [], activePerson = null;
-  const today = new Date();
-  let year = today.getFullYear(), month = today.getMonth();
+        let team = [], holidays = [], activePerson = null;
+        const today = new Date();
+        let year = today.getFullYear(), month = today.getMonth();
 
-  async function load() {
-    const res = await fetch('/api/holiday');
-    const data = await res.json();
-    team = data.team;
-    holidays = data.holidays;
-    render();
-  }
+        async function load() {
+            const res = await fetch('/api/holiday');
+            const data = await res.json();
+            team = data.team;
+            holidays = data.holidays;
+            render();
+        }
 
-  function personColor(name) { return COLORS[team.indexOf(name) % COLORS.length]; }
+        function personColor(name) { return COLORS[team.indexOf(name) % COLORS.length]; }
 
-  function getDayPeople(y, m, d) {
-    const key = `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-    return holidays.filter(h => h.date === key).map(h => h.person);
-  }
+        function getDayPeople(y, m, d) {
+            const key = `${y}-${String(m + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+            return holidays.filter(h => h.date === key).map(h => h.person);
+        }
 
-  function toKey(y, m, d) {
-    return `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
-  }
+        function toKey(y, m, d) {
+            return `${y}-${String(m + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+        }
 
-  async function toggleDay(y, m, d) {
-    if (!activePerson) return;
-    const key = toKey(y, m, d);
-    const has = holidays.some(h => h.person === activePerson && h.date === key);
-    if (has) {
-      await fetch(`/api/holiday?person=${encodeURIComponent(activePerson)}&date=${key}`, { method: 'DELETE' });
-    } else {
-      await fetch('/api/holiday', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ person: activePerson, date: key }) });
-    }
-    await load();
-  }
+        async function toggleDay(y, m, d) {
+            if (!activePerson) return;
+            const key = toKey(y, m, d);
+            const has = holidays.some(h => h.person === activePerson && h.date === key);
+            if (has) {
+                await fetch(`/api/holiday?person=${encodeURIComponent(activePerson)}&date=${key}`, { method: 'DELETE' });
+            } else {
+                await fetch('/api/holiday', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ person: activePerson, date: key }) });
+            }
+            await load();
+        }
 
-  async function removeDay(person, key) {
-    await fetch(`/api/holiday?person=${encodeURIComponent(person)}&date=${key}`, { method: 'DELETE' });
-    await load();
-  }
+        async function removeDay(person, key) {
+            await fetch(`/api/holiday?person=${encodeURIComponent(person)}&date=${key}`, { method: 'DELETE' });
+            await load();
+        }
 
-  async function addMember() {
-    const name = document.getElementById('new-name').value.trim();
-    if (!name || team.includes(name)) return;
-    await fetch('/api/holiday/team', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(name) });
-    document.getElementById('new-name').value = '';
-    await load();
-  }
+        async function addMember() {
+            const name = document.getElementById('new-name').value.trim();
+            if (!name || team.includes(name)) return;
+            await fetch('/api/holiday/team', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(name) });
+            document.getElementById('new-name').value = '';
+            await load();
+        }
 
-  async function removeMember(name) {
-    await fetch(`/api/holiday/team?name=${encodeURIComponent(name)}`, { method: 'DELETE' });
-    if (activePerson === name) activePerson = null;
-    await load();
-  }
+        async function removeMember(name) {
+            await fetch(`/api/holiday/team?name=${encodeURIComponent(name)}`, { method: 'DELETE' });
+            if (activePerson === name) activePerson = null;
+            await load();
+        }
 
-  function switchView(v) {
-    document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
-    document.querySelectorAll('.tabs button').forEach(el => el.classList.remove('active'));
-    document.getElementById(v).classList.add('active');
-    event.target.classList.add('active');
-    if (v === 'list') renderList();
-    if (v === 'settings') renderSettings();
-  }
+        function switchView(v) {
+            document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.tabs button').forEach(el => el.classList.remove('active'));
+            document.getElementById(v).classList.add('active');
+            event.target.classList.add('active');
+            if (v === 'list') renderList();
+            if (v === 'settings') renderSettings();
+        }
 
-  function prevMonth() { if (month === 0) { month = 11; year--; } else month--; renderCalendar(); }
-  function nextMonth() { if (month === 11) { month = 0; year++; } else month++; renderCalendar(); }
+        function prevMonth() { if (month === 0) { month = 11; year--; } else month--; renderCalendar(); }
+        function nextMonth() { if (month === 11) { month = 0; year++; } else month++; renderCalendar(); }
 
-  function renderChips() {
-    const el = document.getElementById('chips');
-    el.innerHTML = team.map(name => {
-      const color = personColor(name);
-      const isActive = activePerson === name;
-      return `<button class="chip ${isActive ? 'active' : ''}"
-        style="border-color:${color};color:${isActive?'#fff':color};background:${isActive?color:'#1e1e2e'}"
-        onclick="selectPerson('${name}')">${name}</button>`;
-    }).join('');
-    document.getElementById('hint').textContent = activePerson
-      ? `Click days to toggle your holidays`
-      : 'Select your name to start adding holidays';
-    if (activePerson) document.getElementById('hint').style.color = personColor(activePerson);
-  }
+        function renderChips() {
+            const el = document.getElementById('chips');
+            el.innerHTML = team.map(name => {
+                const color = personColor(name);
+                const isActive = activePerson === name;
+                return `<button class="chip ${isActive ? 'active' : ''}"
+                style="border-color:${color};color:${isActive ? '#fff' : color};background:${isActive ? color : '#1e1e2e'}"
+                onclick="selectPerson('${name}')">${name}</button>`;
+            }).join('');
+            document.getElementById('hint').textContent = activePerson
+                ? `Click days to toggle your holidays`
+                : 'Select your name to start adding holidays';
+            if (activePerson) document.getElementById('hint').style.color = personColor(activePerson);
+        }
 
-  function selectPerson(name) {
-    activePerson = activePerson === name ? null : name;
-    renderChips();
-  }
+        function selectPerson(name) {
+            activePerson = activePerson === name ? null : name;
+            renderChips();
+        }
 
-  function renderCalendar() {
-    document.getElementById('cal-title').textContent = `${MONTHS[month]} ${year}`;
-    const daysInMonth = new Date(year, month + 1, 0).getDate();
-    const firstDay = new Date(year, month, 1).getDay();
+        function renderCalendar() {
+            document.getElementById('cal-title').textContent = `${MONTHS[month]} ${year}`;
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            const firstDay = new Date(year, month, 1).getDay();
 
-    // Overlaps
-    const overlaps = {};
-    for (let d = 1; d <= daysInMonth; d++) {
-      const people = getDayPeople(year, month, d);
-      if (people.length > 1) overlaps[d] = people;
-    }
-    const alertEl = document.getElementById('overlap-alert');
-    if (Object.keys(overlaps).length > 0) {
-      alertEl.style.display = 'flex';
-      alertEl.innerHTML = '⚠️ Overlaps this month: ' + Object.entries(overlaps).map(([d, p]) =>
-        `<span class="overlap-badge">${d} ${MONTHS[month].slice(0,3)}: ${p.join(', ')}</span>`).join('');
-    } else { alertEl.style.display = 'none'; }
+            // Overlaps
+            const overlaps = {};
+            for (let d = 1; d <= daysInMonth; d++) {
+                const people = getDayPeople(year, month, d);
+                if (people.length > 1) overlaps[d] = people;
+            }
+            const alertEl = document.getElementById('overlap-alert');
+            if (Object.keys(overlaps).length > 0) {
+                alertEl.style.display = 'flex';
+                alertEl.innerHTML = '⚠️ Overlaps this month: ' + Object.entries(overlaps).map(([d, p]) =>
+                    `<span class="overlap-badge">${d} ${MONTHS[month].slice(0, 3)}: ${p.join(', ')}</span>`).join('');
+            } else { alertEl.style.display = 'none'; }
 
-    let html = DAYS.map(d => `<div class="day-header">${d}</div>`).join('');
-    for (let i = 0; i < firstDay; i++) html += '<div></div>';
-    for (let d = 1; d <= daysInMonth; d++) {
-      const dow = (firstDay + d - 1) % 7;
-      const isWeekend = dow === 0 || dow === 6;
-      const isToday = d === today.getDate() && month === today.getMonth() && year === today.getFullYear();
-      const people = getDayPeople(year, month, d);
-      const dots = people.slice(0,4).map(p => `<span class="dot" style="background:${personColor(p)}" title="${p}"></span>`).join('');
-      html += `<div class="day-cell ${isWeekend?'weekend':''} ${isToday?'today':''}"
-        ${!isWeekend ? `onclick="toggleDay(${year},${month},${d})"` : ''}>
-        <span class="day-num">${d}</span>
-        <div class="dots">${dots}</div>
-        ${people.length > 1 ? '<div class="overlap-dot"></div>' : ''}
-      </div>`;
-    }
-    document.getElementById('cal-grid').innerHTML = html;
+            let html = DAYS.map(d => `<div class="day-header">${d}</div>`).join('');
+            for (let i = 0; i < firstDay; i++) html += '<div></div>';
+            for (let d = 1; d <= daysInMonth; d++) {
+                const dow = (firstDay + d - 1) % 7;
+                const isWeekend = dow === 0 || dow === 6;
+                const isToday = d === today.getDate() && month === today.getMonth() && year === today.getFullYear();
+                const people = getDayPeople(year, month, d);
+                const dots = people.slice(0, 4).map(p => `<span class="dot" style="background:${personColor(p)}" title="${p}"></span>`).join('');
+                html += `<div class="day-cell ${isWeekend ? 'weekend' : ''} ${isToday ? 'today' : ''}"
+                ${!isWeekend ? `onclick="toggleDay(${year},${month},${d})"` : ''}>
+                <span class="day-num">${d}</span>
+                <div class="dots">${dots}</div>
+                ${people.length > 1 ? '<div class="overlap-dot"></div>' : ''}
+              </div>`;
+            }
+            document.getElementById('cal-grid').innerHTML = html;
 
-    // Legend
-    const legendHtml = team.filter(name => holidays.some(h => h.person === name)).map(name => {
-      const count = holidays.filter(h => h.person === name).length;
-      return `<div class="legend-item"><span class="dot" style="background:${personColor(name)}"></span>${name}<span class="legend-count">${count}d</span></div>`;
-    }).join('');
-    document.getElementById('legend').innerHTML = legendHtml;
-  }
+            // Legend
+            const legendHtml = team.filter(name => holidays.some(h => h.person === name)).map(name => {
+                const count = holidays.filter(h => h.person === name).length;
+                return `<div class="legend-item"><span class="dot" style="background:${personColor(name)}"></span>${name}<span class="legend-count">${count}d</span></div>`;
+            }).join('');
+            document.getElementById('legend').innerHTML = legendHtml;
+        }
 
-  function renderList() {
-    const el = document.getElementById('list-content');
-    if (holidays.length === 0) { el.innerHTML = '<div class="empty">No holidays logged yet.</div>'; return; }
-    el.innerHTML = team.map(name => {
-      const days = holidays.filter(h => h.person === name).map(h => h.date).sort();
-      if (!days.length) return '';
-      const color = personColor(name);
-      return `<div class="person-block">
-        <div class="person-block-header" style="border-color:${color}">
-          <span style="color:${color};font-weight:700">${name}</span>
-          <span style="font-size:12px;color:#666">${days.length} day${days.length!==1?'s':''}</span>
-        </div>
-        <div class="day-tags">${days.map(key => {
-          const [y,m,d] = key.split('-').map(Number);
-          return `<span class="day-tag">${d} ${MONTHS[m-1].slice(0,3)} ${y}
-            <button class="remove-btn" onclick="removeDay('${name}','${key}')">×</button></span>`;
-        }).join('')}</div>
-      </div>`;
-    }).join('');
-  }
+        function renderList() {
+            const el = document.getElementById('list-content');
+            if (holidays.length === 0) { el.innerHTML = '<div class="empty">No holidays logged yet.</div>'; return; }
+            el.innerHTML = team.map(name => {
+                const days = holidays.filter(h => h.person === name).map(h => h.date).sort();
+                if (!days.length) return '';
+                const color = personColor(name);
+                return `<div class="person-block">
+                <div class="person-block-header" style="border-color:${color}">
+                  <span style="color:${color};font-weight:700">${name}</span>
+                  <span style="font-size:12px;color:#666">${days.length} day${days.length !== 1 ? 's' : ''}</span>
+                </div>
+                <div class="day-tags">${days.map(key => {
+                    const [y, m, d] = key.split('-').map(Number);
+                    return `<span class="day-tag">${d} ${MONTHS[m - 1].slice(0, 3)} ${y}
+                    <button class="remove-btn" onclick="removeDay('${name}','${key}')">×</button></span>`;
+                }).join('')}</div>
+              </div>`;
+            }).join('');
+        }
 
-  function renderSettings() {
-    document.getElementById('team-list').innerHTML = team.map((name, i) => `
-      <div class="team-row">
-        <span class="dot" style="background:${COLORS[i%COLORS.length]};width:12px;height:12px"></span>
-        <span>${name}</span>
-        <button class="remove-team-btn" onclick="removeMember('${name}')">Remove</button>
-      </div>`).join('');
-  }
+        function renderSettings() {
+            document.getElementById('team-list').innerHTML = team.map((name, i) => `
+              <div class="team-row">
+                <span class="dot" style="background:${COLORS[i % COLORS.length]};width:12px;height:12px"></span>
+                <span>${name}</span>
+                <button class="remove-team-btn" onclick="removeMember('${name}')">Remove</button>
+              </div>`).join('');
+        }
 
-  function render() { renderChips(); renderCalendar(); }
-  load();
+        function render() { renderChips(); renderCalendar(); }
+
+        function closeWelcome() {
+            document.getElementById('welcome-modal').style.display = 'none';
+            localStorage.setItem('visited', 'true');
+        }
+
+        function toggleHelp() {
+            const content = document.getElementById('help-content');
+            const arrow = document.getElementById('help-arrow');
+            const isOpen = content.style.display === 'block';
+            content.style.display = isOpen ? 'none' : 'block';
+            arrow.textContent = isOpen ? '▼' : '▲';
+        }
+        // Show welcome modal on first visit
+        if (!localStorage.getItem('visited')) {
+            document.getElementById('welcome-modal').style.display = 'flex';
+        }
+        load();
     </script>
+    <!-- Collapsible help section -->
+    <div style="padding:0 24px 24px">
+        <button onclick="toggleHelp()" style="background:none;border:1px solid #2a2a3e;color:#888;padding:8px 16px;border-radius:8px;cursor:pointer;font-size:13px;width:100%;text-align:left">
+            ❓ How to use this app <span id="help-arrow">▼</span>
+        </button>
+        <div id="help-content" style="display:none;background:#1a1a2e;border:1px solid #2a2a3e;border-radius:0 0 8px 8px;padding:16px;font-size:13px;color:#bbb;line-height:1.8">
+            <p>1️⃣ <strong style="color:#fff">Pick your name</strong> from the bar at the top</p>
+            <p>2️⃣ <strong style="color:#fff">Click or drag</strong> days on the calendar to add holidays</p>
+            <p>3️⃣ <strong style="color:#fff">Click again</strong> on a day to remove it</p>
+            <p>4️⃣ <strong style="color:#fff">Weekends</strong> are skipped automatically</p>
+            <p>5️⃣ <strong style="color:#fff">Red dot</strong> on a day means overlap with a colleague</p>
+            <p>6️⃣ Use <strong style="color:#fff">⚙️ Team</strong> tab to add or remove team members</p>
+            <p>7️⃣ Use <strong style="color:#fff">📋 List</strong> tab to see all holidays and remove individual days</p>
+        </div>
+    </div>
 </body>
 </html>
