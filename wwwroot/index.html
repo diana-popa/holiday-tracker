@@ -623,7 +623,13 @@
                 ${people.length > 1 ? '<div class="overlap-dot"></div>' : ''}
                 </div>`;
             }
-            document.getElementById('cal-grid').innerHTML = html;
+
+            const emptyState = holidays.length === 0
+                ? `<div style="text-align:center;color:#444;font-size:13px;padding:20px 0;grid-column:1/-1">
+                No holidays logged yet — select your name above to start 🏖
+                 </div>`
+                : '';
+            document.getElementById('cal-grid').innerHTML = html + emptyState;
 
             // Legend
             const bhCount = Object.keys(bankHolidays).filter(k => {

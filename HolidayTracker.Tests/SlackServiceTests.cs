@@ -85,6 +85,43 @@ public class SlackServiceTests
 
         Assert.AreEqual(1, handler.CallCount);
     }
+
+    [TestMethod]
+    public async Task SendWeeklySummary_WithMultiplePeopleOff_ShouldSendOneMessage()
+    {
+        var handler = new MockHttpMessageHandler(HttpStatusCode.OK);
+        var http = new HttpClient(handler);
+        var service = CreateService(http);
+
+        var monday = DateTime.Today.AddDays(-(int)DateTime.Today.DayOfWeek + 1);
+        var holidays = new List<dynamic>
+    {
+        new HolidayTracker.Models.Holiday { Person = "Alice", Date = monday.ToString("yyyy-MM-dd") },
+        new HolidayTracker.Models.Holiday { Person = "Bob", Date = monday.ToString("yyyy-MM-dd") },
+        new HolidayTracker.Models.Holiday { Person = "Carlos", Date = monday.AddDays(1).ToString("yyyy-MM-dd") }
+    };
+
+        await service.SendWeeklySummary(new List<string> { "Alice", "Bob", "Carlos" }, holidays);
+
+        Assert.AreEqual(1, handler.CallCount);
+    }
+
+    [TestMethod]
+    public async Task SendWeeklySummary_WithHolidaysOutsideCurrentWeek_ShouldStillSendMessage()
+    {
+        var handler = new MockHttpMessageHandler(HttpStatusCode.OK);
+        var http = new HttpClient(handler);
+        var service = CreateService(http);
+
+        var holidays = new List<dynamic>
+    {
+        new HolidayTracker.Models.Holiday { Person = "Alice", Date = "2020-01-01" }
+    };
+
+        await service.SendWeeklySummary(new List<string> { "Alice" }, holidays);
+
+        Assert.AreEqual(1, handler.CallCount);
+    }
 }
 
 public class MockHttpMessageHandler : HttpMessageHandler

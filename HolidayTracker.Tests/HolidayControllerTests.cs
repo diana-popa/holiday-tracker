@@ -132,4 +132,41 @@ public class HolidayControllerTests
 
         Assert.IsInstanceOfType(result, typeof(OkResult));
     }
+
+    [TestMethod]
+    public async Task Add_MultipleHolidaysForSamePerson_ShouldPersistAll()
+    {
+        var (controller, ctx) = CreateController();
+
+        await controller.Add(new Holiday { Person = "Alice", Date = "2024-12-23" });
+        await controller.Add(new Holiday { Person = "Alice", Date = "2024-12-24" });
+        await controller.Add(new Holiday { Person = "Alice", Date = "2024-12-25" });
+
+        Assert.AreEqual(3, ctx.Holidays.Count());
+    }
+
+    [TestMethod]
+    public async Task Add_HolidaysForDifferentPeople_ShouldPersistAll()
+    {
+        var (controller, ctx) = CreateController();
+
+        await controller.Add(new Holiday { Person = "Alice", Date = "2024-12-25" });
+        await controller.Add(new Holiday { Person = "Bob", Date = "2024-12-25" });
+
+        Assert.AreEqual(2, ctx.Holidays.Count());
+    }
+
+    [TestMethod]
+    public void RemoveMember_ShouldAlsoRemoveTheirHolidays()
+    {
+        var (controller, ctx) = CreateController();
+        ctx.TeamMembers.Add(new TeamMember { Name = "Alice" });
+        ctx.Holidays.Add(new Holiday { Person = "Alice", Date = "2024-12-25" });
+        ctx.SaveChanges();
+
+        controller.RemoveMember("Alice");
+
+        Assert.AreEqual(0, ctx.Holidays.Count());
+        Assert.AreEqual(0, ctx.TeamMembers.Count());
+    }
 }

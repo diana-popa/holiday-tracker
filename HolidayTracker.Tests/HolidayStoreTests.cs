@@ -196,4 +196,55 @@ public class HolidayStoreTests
 
         Assert.AreEqual(2, ctx.Holidays.Count());
     }
+
+    [TestMethod]
+    public void RemoveTeamMember_ShouldOnlyRemoveTheirHolidays()
+    {
+        var ctx = CreateInMemoryContext();
+        var store = new HolidayStore(ctx);
+        store.AddTeamMember("Alice");
+        store.AddTeamMember("Bob");
+        store.Add(new Holiday { Person = "Alice", Date = "2024-12-25" });
+        store.Add(new Holiday { Person = "Bob", Date = "2024-12-25" });
+
+        store.RemoveTeamMember("Alice");
+
+        Assert.AreEqual(1, ctx.Holidays.Count());
+        Assert.AreEqual("Bob", ctx.Holidays.First().Person);
+    }
+
+    [TestMethod]
+    public void RemoveTeamMember_ShouldRemoveAllHolidaysForThatPerson()
+    {
+        var ctx = CreateInMemoryContext();
+        var store = new HolidayStore(ctx);
+        store.AddTeamMember("Alice");
+        store.Add(new Holiday { Person = "Alice", Date = "2024-12-23" });
+        store.Add(new Holiday { Person = "Alice", Date = "2024-12-24" });
+        store.Add(new Holiday { Person = "Alice", Date = "2024-12-25" });
+
+        store.RemoveTeamMember("Alice");
+
+        Assert.AreEqual(0, ctx.Holidays.Count());
+    }
+
+    [TestMethod]
+    public void GetAll_ShouldReturnHolidaysForAllTeamMembers()
+    {
+        var ctx = CreateInMemoryContext();
+        var store = new HolidayStore(ctx);
+        store.AddTeamMember("Alice");
+        store.AddTeamMember("Bob");
+        store.AddTeamMember("Carlos");
+        store.Add(new Holiday { Person = "Alice", Date = "2024-12-25" });
+        store.Add(new Holiday { Person = "Bob", Date = "2024-12-26" });
+        store.Add(new Holiday { Person = "Carlos", Date = "2024-12-27" });
+
+        var result = store.GetAll();
+
+        Assert.AreEqual(3, result.Count);
+        Assert.IsTrue(result.Any(h => h.Person == "Alice"));
+        Assert.IsTrue(result.Any(h => h.Person == "Bob"));
+        Assert.IsTrue(result.Any(h => h.Person == "Carlos"));
+    }
 }
