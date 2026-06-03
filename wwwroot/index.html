@@ -1,0 +1,563 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Team Holidays</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            background: #0f0f1a;
+            color: #e8e8f0;
+            font-family: 'Segoe UI', sans-serif;
+            min-height: 100vh;
+        }
+
+        header {
+            background: #13131f;
+            padding: 16px 24px;
+            border-bottom: 1px solid #2a2a3e;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+            header h1 {
+                font-size: 20px;
+            }
+
+        .tabs button {
+            background: none;
+            border: none;
+            color: #888;
+            padding: 8px 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 13px;
+        }
+
+            .tabs button.active {
+                background: #2a2a3e;
+                color: #fff;
+            }
+
+        .person-bar {
+            padding: 14px 24px;
+            border-bottom: 1px solid #2a2a3e;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+            .person-bar label {
+                color: #888;
+                font-size: 13px;
+            }
+
+        .chip {
+            padding: 5px 14px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 13px;
+            font-weight: 600;
+            border: 2px solid;
+            background: #1e1e2e;
+            transition: all 0.15s;
+        }
+
+            .chip.active {
+                color: #fff !important;
+            }
+
+        .hint {
+            font-size: 12px;
+            color: #666;
+            margin-left: auto;
+        }
+
+        .view {
+            display: none;
+            padding: 20px 24px;
+        }
+
+            .view.active {
+                display: block;
+            }
+
+        .cal-nav {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 16px;
+        }
+
+            .cal-nav button {
+                background: #2a2a3e;
+                border: none;
+                color: #fff;
+                width: 36px;
+                height: 36px;
+                border-radius: 8px;
+                cursor: pointer;
+                font-size: 20px;
+            }
+
+            .cal-nav h2 {
+                font-size: 22px;
+                min-width: 200px;
+            }
+
+        .overlap-alert {
+            background: #2a1a1a;
+            border: 1px solid #ff6b6b44;
+            border-radius: 10px;
+            padding: 10px 14px;
+            margin-bottom: 14px;
+            font-size: 13px;
+            color: #ff9999;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .overlap-badge {
+            background: #ff6b6b22;
+            border: 1px solid #ff6b6b44;
+            border-radius: 6px;
+            padding: 2px 8px;
+            font-size: 12px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+        }
+
+        .day-header {
+            text-align: center;
+            font-size: 11px;
+            font-weight: 700;
+            color: #555;
+            padding: 6px 0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .day-cell {
+            background: #1a1a2e;
+            border-radius: 8px;
+            min-height: 72px;
+            padding: 6px 8px;
+            position: relative;
+            cursor: pointer;
+            border: 1px solid transparent;
+            transition: background 0.1s;
+        }
+
+            .day-cell:hover {
+                background: #22223a;
+            }
+
+            .day-cell.weekend {
+                background: #14141f;
+                opacity: 0.5;
+                cursor: default;
+            }
+
+            .day-cell.today {
+                border-color: #4D96FF88;
+                background: #1a243e;
+            }
+
+        .day-num {
+            font-size: 13px;
+            font-weight: 600;
+            color: #aaa;
+        }
+
+        .dots {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 3px;
+            margin-top: 4px;
+        }
+
+        .dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            display: inline-block;
+        }
+
+        .overlap-dot {
+            position: absolute;
+            top: 4px;
+            right: 4px;
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #FF6B6B;
+        }
+
+        .legend {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 20px;
+            padding-top: 14px;
+            border-top: 1px solid #2a2a3e;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            color: #bbb;
+        }
+
+        .legend-count {
+            font-size: 11px;
+            color: #666;
+        }
+
+        .person-block {
+            margin-bottom: 20px;
+            background: #1a1a2e;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .person-block-header {
+            padding: 10px 14px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #15152a;
+            border-left: 4px solid;
+        }
+
+        .day-tags {
+            padding: 10px 14px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .day-tag {
+            background: #2a2a3e;
+            border-radius: 6px;
+            padding: 4px 10px;
+            font-size: 13px;
+            color: #ccc;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .remove-btn {
+            background: none;
+            border: none;
+            color: #ff6b6b;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        .team-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .team-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #1a1a2e;
+            padding: 10px 14px;
+            border-radius: 8px;
+        }
+
+            .team-row span {
+                flex: 1;
+                font-size: 15px;
+                color: #ddd;
+            }
+
+        .remove-team-btn {
+            background: none;
+            border: 1px solid #ff6b6b44;
+            color: #ff6b6b;
+            padding: 4px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+
+        .add-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 16px;
+        }
+
+        input {
+            flex: 1;
+            background: #1a1a2e;
+            border: 1px solid #2a2a3e;
+            border-radius: 8px;
+            padding: 10px 14px;
+            color: #fff;
+            font-size: 14px;
+        }
+
+        .add-btn {
+            background: #4D96FF;
+            border: none;
+            color: #fff;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .empty {
+            color: #555;
+            font-size: 15px;
+            text-align: center;
+            padding: 60px 0;
+        }
+
+        .note {
+            font-size: 13px;
+            color: #555;
+            line-height: 1.6;
+            margin-top: 16px;
+        }
+
+        h2 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>🏖 Team Holidays</h1>
+        <div class="tabs">
+            <button class="active" onclick="switchView('calendar')">📅 Calendar</button>
+            <button onclick="switchView('list')">📋 List</button>
+            <button onclick="switchView('settings')">⚙️ Team</button>
+        </div>
+    </header>
+
+    <div class="person-bar">
+        <label>Who are you?</label>
+        <div id="chips"></div>
+        <span class="hint" id="hint">Select your name to start adding holidays</span>
+    </div>
+
+    <div id="calendar" class="view active">
+        <div class="cal-nav">
+            <button onclick="prevMonth()">‹</button>
+            <h2 id="cal-title"></h2>
+            <button onclick="nextMonth()">›</button>
+        </div>
+        <div id="overlap-alert" class="overlap-alert" style="display:none"></div>
+        <div class="grid" id="cal-grid"></div>
+        <div class="legend" id="legend"></div>
+    </div>
+
+    <div id="list" class="view">
+        <h2>All Holidays</h2>
+        <div id="list-content"></div>
+    </div>
+
+    <div id="settings" class="view">
+        <h2>Manage Team</h2>
+        <div class="team-list" id="team-list"></div>
+        <div class="add-row">
+            <input id="new-name" placeholder="Add team member name…" onkeydown="if(event.key==='Enter') addMember()" />
+            <button class="add-btn" onclick="addMember()">Add</button>
+        </div>
+        <p class="note">Changes are saved on the server — all teammates see the same data instantly.</p>
+    </div>
+
+    <script>
+  const COLORS = ["#FF6B6B","#4ECDC4","#FFD93D","#6BCB77","#4D96FF","#FF6FC8","#F4A261","#A8DADC","#E63946","#2EC4B6","#CBAC88","#9B5DE5"];
+  const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+  const DAYS = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+
+  let team = [], holidays = [], activePerson = null;
+  const today = new Date();
+  let year = today.getFullYear(), month = today.getMonth();
+
+  async function load() {
+    const res = await fetch('/api/holiday');
+    const data = await res.json();
+    team = data.team;
+    holidays = data.holidays;
+    render();
+  }
+
+  function personColor(name) { return COLORS[team.indexOf(name) % COLORS.length]; }
+
+  function getDayPeople(y, m, d) {
+    const key = `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+    return holidays.filter(h => h.date === key).map(h => h.person);
+  }
+
+  function toKey(y, m, d) {
+    return `${y}-${String(m+1).padStart(2,'0')}-${String(d).padStart(2,'0')}`;
+  }
+
+  async function toggleDay(y, m, d) {
+    if (!activePerson) return;
+    const key = toKey(y, m, d);
+    const has = holidays.some(h => h.person === activePerson && h.date === key);
+    if (has) {
+      await fetch(`/api/holiday?person=${encodeURIComponent(activePerson)}&date=${key}`, { method: 'DELETE' });
+    } else {
+      await fetch('/api/holiday', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ person: activePerson, date: key }) });
+    }
+    await load();
+  }
+
+  async function removeDay(person, key) {
+    await fetch(`/api/holiday?person=${encodeURIComponent(person)}&date=${key}`, { method: 'DELETE' });
+    await load();
+  }
+
+  async function addMember() {
+    const name = document.getElementById('new-name').value.trim();
+    if (!name || team.includes(name)) return;
+    await fetch('/api/holiday/team', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(name) });
+    document.getElementById('new-name').value = '';
+    await load();
+  }
+
+  async function removeMember(name) {
+    await fetch(`/api/holiday/team?name=${encodeURIComponent(name)}`, { method: 'DELETE' });
+    if (activePerson === name) activePerson = null;
+    await load();
+  }
+
+  function switchView(v) {
+    document.querySelectorAll('.view').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.tabs button').forEach(el => el.classList.remove('active'));
+    document.getElementById(v).classList.add('active');
+    event.target.classList.add('active');
+    if (v === 'list') renderList();
+    if (v === 'settings') renderSettings();
+  }
+
+  function prevMonth() { if (month === 0) { month = 11; year--; } else month--; renderCalendar(); }
+  function nextMonth() { if (month === 11) { month = 0; year++; } else month++; renderCalendar(); }
+
+  function renderChips() {
+    const el = document.getElementById('chips');
+    el.innerHTML = team.map(name => {
+      const color = personColor(name);
+      const isActive = activePerson === name;
+      return `<button class="chip ${isActive ? 'active' : ''}"
+        style="border-color:${color};color:${isActive?'#fff':color};background:${isActive?color:'#1e1e2e'}"
+        onclick="selectPerson('${name}')">${name}</button>`;
+    }).join('');
+    document.getElementById('hint').textContent = activePerson
+      ? `Click days to toggle your holidays`
+      : 'Select your name to start adding holidays';
+    if (activePerson) document.getElementById('hint').style.color = personColor(activePerson);
+  }
+
+  function selectPerson(name) {
+    activePerson = activePerson === name ? null : name;
+    renderChips();
+  }
+
+  function renderCalendar() {
+    document.getElementById('cal-title').textContent = `${MONTHS[month]} ${year}`;
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const firstDay = new Date(year, month, 1).getDay();
+
+    // Overlaps
+    const overlaps = {};
+    for (let d = 1; d <= daysInMonth; d++) {
+      const people = getDayPeople(year, month, d);
+      if (people.length > 1) overlaps[d] = people;
+    }
+    const alertEl = document.getElementById('overlap-alert');
+    if (Object.keys(overlaps).length > 0) {
+      alertEl.style.display = 'flex';
+      alertEl.innerHTML = '⚠️ Overlaps this month: ' + Object.entries(overlaps).map(([d, p]) =>
+        `<span class="overlap-badge">${d} ${MONTHS[month].slice(0,3)}: ${p.join(', ')}</span>`).join('');
+    } else { alertEl.style.display = 'none'; }
+
+    let html = DAYS.map(d => `<div class="day-header">${d}</div>`).join('');
+    for (let i = 0; i < firstDay; i++) html += '<div></div>';
+    for (let d = 1; d <= daysInMonth; d++) {
+      const dow = (firstDay + d - 1) % 7;
+      const isWeekend = dow === 0 || dow === 6;
+      const isToday = d === today.getDate() && month === today.getMonth() && year === today.getFullYear();
+      const people = getDayPeople(year, month, d);
+      const dots = people.slice(0,4).map(p => `<span class="dot" style="background:${personColor(p)}" title="${p}"></span>`).join('');
+      html += `<div class="day-cell ${isWeekend?'weekend':''} ${isToday?'today':''}"
+        ${!isWeekend ? `onclick="toggleDay(${year},${month},${d})"` : ''}>
+        <span class="day-num">${d}</span>
+        <div class="dots">${dots}</div>
+        ${people.length > 1 ? '<div class="overlap-dot"></div>' : ''}
+      </div>`;
+    }
+    document.getElementById('cal-grid').innerHTML = html;
+
+    // Legend
+    const legendHtml = team.filter(name => holidays.some(h => h.person === name)).map(name => {
+      const count = holidays.filter(h => h.person === name).length;
+      return `<div class="legend-item"><span class="dot" style="background:${personColor(name)}"></span>${name}<span class="legend-count">${count}d</span></div>`;
+    }).join('');
+    document.getElementById('legend').innerHTML = legendHtml;
+  }
+
+  function renderList() {
+    const el = document.getElementById('list-content');
+    if (holidays.length === 0) { el.innerHTML = '<div class="empty">No holidays logged yet.</div>'; return; }
+    el.innerHTML = team.map(name => {
+      const days = holidays.filter(h => h.person === name).map(h => h.date).sort();
+      if (!days.length) return '';
+      const color = personColor(name);
+      return `<div class="person-block">
+        <div class="person-block-header" style="border-color:${color}">
+          <span style="color:${color};font-weight:700">${name}</span>
+          <span style="font-size:12px;color:#666">${days.length} day${days.length!==1?'s':''}</span>
+        </div>
+        <div class="day-tags">${days.map(key => {
+          const [y,m,d] = key.split('-').map(Number);
+          return `<span class="day-tag">${d} ${MONTHS[m-1].slice(0,3)} ${y}
+            <button class="remove-btn" onclick="removeDay('${name}','${key}')">×</button></span>`;
+        }).join('')}</div>
+      </div>`;
+    }).join('');
+  }
+
+  function renderSettings() {
+    document.getElementById('team-list').innerHTML = team.map((name, i) => `
+      <div class="team-row">
+        <span class="dot" style="background:${COLORS[i%COLORS.length]};width:12px;height:12px"></span>
+        <span>${name}</span>
+        <button class="remove-team-btn" onclick="removeMember('${name}')">Remove</button>
+      </div>`).join('');
+  }
+
+  function render() { renderChips(); renderCalendar(); }
+  load();
+    </script>
+</body>
+</html>
