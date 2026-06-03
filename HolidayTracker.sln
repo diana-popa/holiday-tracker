@@ -1,11 +1,11 @@
-﻿
+
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.14.36717.8
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HolidayTracker", "HolidayTracker.csproj", "{7523CE69-06BA-A00B-DED8-6C64CDDEF283}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HolidayTracker.Tests", "HolidayTracker.Tests\HolidayTracker.Tests.csproj", "{05A5E087-D35C-47E7-9F53-4D25AB41D461}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HolidayTracker.Tests", "..\HolidayTracker.Tests\HolidayTracker.Tests.csproj", "{EF580D4C-917D-432B-A5DE-8ECA24C4AEF4}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,18 +29,18 @@ Global
 		{7523CE69-06BA-A00B-DED8-6C64CDDEF283}.Release|x64.Build.0 = Release|Any CPU
 		{7523CE69-06BA-A00B-DED8-6C64CDDEF283}.Release|x86.ActiveCfg = Release|Any CPU
 		{7523CE69-06BA-A00B-DED8-6C64CDDEF283}.Release|x86.Build.0 = Release|Any CPU
-		{05A5E087-D35C-47E7-9F53-4D25AB41D461}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{05A5E087-D35C-47E7-9F53-4D25AB41D461}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{05A5E087-D35C-47E7-9F53-4D25AB41D461}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{05A5E087-D35C-47E7-9F53-4D25AB41D461}.Debug|x64.Build.0 = Debug|Any CPU
-		{05A5E087-D35C-47E7-9F53-4D25AB41D461}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{05A5E087-D35C-47E7-9F53-4D25AB41D461}.Debug|x86.Build.0 = Debug|Any CPU
-		{05A5E087-D35C-47E7-9F53-4D25AB41D461}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{05A5E087-D35C-47E7-9F53-4D25AB41D461}.Release|Any CPU.Build.0 = Release|Any CPU
-		{05A5E087-D35C-47E7-9F53-4D25AB41D461}.Release|x64.ActiveCfg = Release|Any CPU
-		{05A5E087-D35C-47E7-9F53-4D25AB41D461}.Release|x64.Build.0 = Release|Any CPU
-		{05A5E087-D35C-47E7-9F53-4D25AB41D461}.Release|x86.ActiveCfg = Release|Any CPU
-		{05A5E087-D35C-47E7-9F53-4D25AB41D461}.Release|x86.Build.0 = Release|Any CPU
+		{EF580D4C-917D-432B-A5DE-8ECA24C4AEF4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EF580D4C-917D-432B-A5DE-8ECA24C4AEF4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EF580D4C-917D-432B-A5DE-8ECA24C4AEF4}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{EF580D4C-917D-432B-A5DE-8ECA24C4AEF4}.Debug|x64.Build.0 = Debug|Any CPU
+		{EF580D4C-917D-432B-A5DE-8ECA24C4AEF4}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{EF580D4C-917D-432B-A5DE-8ECA24C4AEF4}.Debug|x86.Build.0 = Debug|Any CPU
+		{EF580D4C-917D-432B-A5DE-8ECA24C4AEF4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EF580D4C-917D-432B-A5DE-8ECA24C4AEF4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EF580D4C-917D-432B-A5DE-8ECA24C4AEF4}.Release|x64.ActiveCfg = Release|Any CPU
+		{EF580D4C-917D-432B-A5DE-8ECA24C4AEF4}.Release|x64.Build.0 = Release|Any CPU
+		{EF580D4C-917D-432B-A5DE-8ECA24C4AEF4}.Release|x86.ActiveCfg = Release|Any CPU
+		{EF580D4C-917D-432B-A5DE-8ECA24C4AEF4}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
