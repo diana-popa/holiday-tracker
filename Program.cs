@@ -18,8 +18,9 @@ using (var scope = app.Services.CreateScope())
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
     db.Database.EnsureCreated();
 
-    // Seed default team if empty
-    var store = scope.ServiceProvider.GetRequiredService<HolidayStore>();
+    // Seed default team if empty
+    var store = scope.ServiceProvider.GetRequiredService<HolidayStore>();
+
     if (!store.GetTeam().Any())
     {
         foreach (var name in new[] { "Alice", "Bob", "Carlos", "Dana", "Eli", "Fiona" })

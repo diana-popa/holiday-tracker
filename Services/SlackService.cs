@@ -39,7 +39,7 @@ public class SlackService
 
         var lines = offThisWeek.Select(g => {
             var days = g.Select(h => DateTime.Parse((string)h.date).ToString("ddd d MMM")).ToList();
-            return $"• *{g.Key}*: {string.Join(", ", days)}";
+            return $"- *{g.Key}*: {string.Join(", ", days)}";
         });
 
         var msg = ":date: *This week's holidays:*\n" + string.Join("\n", lines);
