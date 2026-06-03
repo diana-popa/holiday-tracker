@@ -48,9 +48,15 @@ public class SlackService
 
     private async Task Send(string message)
     {
-        if (string.IsNullOrEmpty(_webhookUrl)) return;
+        if (string.IsNullOrEmpty(_webhookUrl))
+        {
+            Console.WriteLine("Slack webhook URL is empty or missing");
+            return;
+        }
+        Console.WriteLine($"Sending Slack message to: {_webhookUrl[..20]}...");
         var payload = System.Text.Json.JsonSerializer.Serialize(new { text = message });
-        await _http.PostAsync(_webhookUrl, new StringContent(payload, System.Text.Encoding.UTF8, "application/json"));
+        var response = await _http.PostAsync(_webhookUrl, new StringContent(payload, System.Text.Encoding.UTF8, "application/json"));
+        Console.WriteLine($"Slack response: {response.StatusCode}");
     }
 
     private DateTime GetNextMonday()
