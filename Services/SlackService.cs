@@ -7,7 +7,7 @@ public class SlackService
 
     public SlackService(IConfiguration config, HttpClient http)
     {
-        _webhookUrl = "PASTE_YOUR_FULL_WEBHOOK_URL_HERE";
+        _webhookUrl = "https://hooks.slack.com/services/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";
         //_webhookUrl = Environment.GetEnvironmentVariable("SLACK_WEBHOOK_URL")
         //?? config["Slack:WebhookUrl"];
         _http = http;
