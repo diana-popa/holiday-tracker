@@ -7,7 +7,8 @@ public class SlackService
 
     public SlackService(IConfiguration config, HttpClient http)
     {
-        _webhookUrl = config["Slack:WebhookUrl"];
+        _webhookUrl = Environment.GetEnvironmentVariable("SLACK_WEBHOOK_URL")
+        ?? config["Slack:WebhookUrl"];
         _http = http;
     }
 
