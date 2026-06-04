@@ -408,6 +408,7 @@
             <button class="active" onclick="switchView('calendar')">📅 Calendar</button>
             <button onclick="switchView('list')">📋 List</button>
             <button onclick="switchView('settings')">⚙️ Team</button>
+            <button onclick="switchView('about')">ℹ️ About</button>
         </div>
     </header>
 
@@ -431,6 +432,58 @@
     <div id="list" class="view">
         <h2>All Holidays</h2>
         <div id="list-content"></div>
+    </div>
+
+    <div id="about" class="view" style="max-width:680px">
+        <h2>About This App</h2>
+        <div style="background:#1a1a2e;border-radius:10px;padding:20px;margin-bottom:16px">
+            <h3 style="color:#4D96FF;font-size:15px;margin-bottom:10px">🔍 The Problem</h3>
+            <p style="color:#bbb;font-size:14px;line-height:1.7">Small scrum teams within larger organisations often lack a simple way to track holidays at team level. Company-wide tools like Workday operate at a broader organisational level and don't give a scrum team instant visibility of who is off and when. As a workaround, teams resort to manually maintaining a shared list in a Slack tab — which is error prone, hard to read, and gives no visual indication of overlaps that could impact sprint planning and day to day collaboration.</p>
+        </div>
+
+        <div style="background:#1a1a2e;border-radius:10px;padding:20px;margin-bottom:16px">
+            <h3 style="color:#4D96FF;font-size:15px;margin-bottom:10px">💡 The Solution</h3>
+            <p style="color:#bbb;font-size:14px;line-height:1.7">Team Holiday Tracker is a lightweight internal web app built specifically for a small scrum team. It gives the team a shared calendar view of all holidays, automatically highlights days where multiple people are off simultaneously, and integrates with Slack to keep the team informed without any extra effort. Bank holidays for UK, Romania and India are displayed automatically so the team always has full context when planning. No installation required — just a browser and a link.</p>
+        </div>
+
+        <div style="background:#1a1a2e;border-radius:10px;padding:20px;margin-bottom:16px">
+            <h3 style="color:#4D96FF;font-size:15px;margin-bottom:10px">✨ Key Features</h3>
+            <ul style="color:#bbb;font-size:14px;line-height:2;padding-left:20px">
+                <li>Calendar view with colour coded holidays per person</li>
+                <li>Overlap detection with red indicator and summary banner</li>
+                <li>Bank holidays for 🇬🇧 UK, 🇷🇴 Romania and 🇮🇳 India shown automatically</li>
+                <li>Slack notifications on holiday addition and weekly Monday summary</li>
+                <li>Team management — add or remove members via the settings tab</li>
+                <li>Data persistence — holidays survive app restarts</li>
+                <li>No individual logins required</li>
+            </ul>
+        </div>
+
+        <div style="background:#1a1a2e;border-radius:10px;padding:20px;margin-bottom:16px">
+            <h3 style="color:#4D96FF;font-size:15px;margin-bottom:10px">🛠 Tech Stack</h3>
+            <ul style="color:#bbb;font-size:14px;line-height:2;padding-left:20px">
+                <li>Backend: ASP.NET Core 8 (C#)</li>
+                <li>Database: SQLite via Entity Framework Core</li>
+                <li>Frontend: Vanilla HTML, CSS and JavaScript</li>
+                <li>Notifications: Slack Incoming Webhooks</li>
+                <li>Bank Holidays: Nager.Date API and hardcoded Indian holidays</li>
+                <li>Testing: MSTest — 33 unit tests</li>
+                <li>Hosting: Railway (Docker)</li>
+                <li>Source Control: GitHub (private)</li>
+            </ul>
+        </div>
+
+        <div style="background:#1a1a2e;border-radius:10px;padding:20px">
+            <h3 style="color:#4D96FF;font-size:15px;margin-bottom:10px">🚀 Planned Next Steps</h3>
+            <ul style="color:#bbb;font-size:14px;line-height:2;padding-left:20px">
+                <li>Migrate to Azure App Service and Azure SQL</li>
+                <li>Add individual logins with role based access</li>
+                <li>Secure secrets via Azure Key Vault</li>
+                <li>Persistent shared database to replace SQLite</li>
+            </ul>
+        </div>
+
+        <p style="color:#555;font-size:12px;margin-top:16px;text-align:center">Built with Claude · Vibecoded for a scrum team 🏖</p>
     </div>
 
     <div id="settings" class="view">
@@ -572,9 +625,9 @@
                 const isActive = activePerson === name;
                 const count = holidays.filter(h => h.person === name).length;
                 const label = count > 0 ? `${name} <span style="font-size:11px;opacity:0.8">(${count}d)</span>` : name;
-                return `<button class="chip ${isActive ? 'active' : ''}" 
-                style="border-color:${color};color:${isActive ? '#fff' : color};background:${isActive ? color : '#1e1e2e'}"
-                onclick="selectPerson('${name}')">${label}</button>`;
+                return `<button class="chip ${isActive ? 'active' : ''}"
+                    style="border-color:${color};color:${isActive ? '#fff' : color};background:${isActive ? color : '#1e1e2e'}"
+                    onclick="selectPerson('${name}')">${label}</button>`;
             }).join('');
             document.getElementById('hint').textContent = activePerson
                 ? `Click days to toggle your holidays`
@@ -615,20 +668,20 @@
                 const key = toKey(year, month, d);
                 const bh = bankHolidays[key] || [];
                 const dots = people.slice(0, 4).map(p => `<span class="dot" style="background:${personColor(p)}" title="${p}"></span>`).join('');
-                html += `<div class="day-cell ${isWeekend ? 'weekend' : ''} ${isToday ? 'today' : ''} ${bh.length ? 'bank-holiday' : ''}" 
-                 ${!isWeekend ? `onclick="toggleDay(${year},${month},${d})"` : ''}
-                 ${bh.length ? `title="${bh.join(', ')}"` : ''}>
-                <span class="day-num">${d}</span>
-                ${bh.length ? `<div style="font-size:10px;color:#6BCB77;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${bh[0]}</div>` : ''}
-                <div class="dots">${dots}</div>
-                ${people.length > 1 ? '<div class="overlap-dot"></div>' : ''}
-                </div>`;
+                html += `<div class="day-cell ${isWeekend ? 'weekend' : ''} ${isToday ? 'today' : ''} ${bh.length ? 'bank-holiday' : ''}"
+                     ${!isWeekend ? `onclick="toggleDay(${year},${month},${d})"` : ''}
+                     ${bh.length ? `title="${bh.join(', ')}"` : ''}>
+                    <span class="day-num">${d}</span>
+                    ${bh.length ? `<div style="font-size:10px;color:#6BCB77;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${bh[0]}</div>` : ''}
+                    <div class="dots">${dots}</div>
+                    ${people.length > 1 ? '<div class="overlap-dot"></div>' : ''}
+                    </div>`;
             }
 
             const emptyState = holidays.length === 0
                 ? `<div style="text-align:center;color:#444;font-size:13px;padding:20px 0;grid-column:1/-1">
-                No holidays logged yet — select your name above to start 🏖
-                 </div>`
+                    No holidays logged yet — select your name above to start 🏖
+                     </div>`
                 : '';
             document.getElementById('cal-grid').innerHTML = html + emptyState;
 
@@ -653,26 +706,26 @@
                 if (!days.length) return '';
                 const color = personColor(name);
                 return `<div class="person-block">
-                <div class="person-block-header" style="border-color:${color}">
-                  <span style="color:${color};font-weight:700">${name}</span>
-                  <span style="font-size:12px;color:#666">${days.length} day${days.length !== 1 ? 's' : ''}</span>
-                </div>
-                <div class="day-tags">${days.map(key => {
+                    <div class="person-block-header" style="border-color:${color}">
+                      <span style="color:${color};font-weight:700">${name}</span>
+                      <span style="font-size:12px;color:#666">${days.length} day${days.length !== 1 ? 's' : ''}</span>
+                    </div>
+                    <div class="day-tags">${days.map(key => {
                     const [y, m, d] = key.split('-').map(Number);
                     return `<span class="day-tag">${d} ${MONTHS[m - 1].slice(0, 3)} ${y}
-                    <button class="remove-btn" onclick="removeDay('${name}','${key}')">×</button></span>`;
+                        <button class="remove-btn" onclick="removeDay('${name}','${key}')">×</button></span>`;
                 }).join('')}</div>
-              </div>`;
+                  </div>`;
             }).join('');
         }
 
         function renderSettings() {
             document.getElementById('team-list').innerHTML = team.map((name, i) => `
-              <div class="team-row">
-                <span class="dot" style="background:${COLORS[i % COLORS.length]};width:12px;height:12px"></span>
-                <span>${name}</span>
-                <button class="remove-team-btn" onclick="removeMember('${name}')">Remove</button>
-              </div>`).join('');
+                  <div class="team-row">
+                    <span class="dot" style="background:${COLORS[i % COLORS.length]};width:12px;height:12px"></span>
+                    <span>${name}</span>
+                    <button class="remove-team-btn" onclick="removeMember('${name}')">Remove</button>
+                  </div>`).join('');
         }
 
         function render() { renderChips(); renderCalendar(); }
