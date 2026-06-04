@@ -672,7 +672,7 @@
                      ${!isWeekend ? `onclick="toggleDay(${year},${month},${d})"` : ''}
                      ${bh.length ? `title="${bh.join(', ')}"` : ''}>
                     <span class="day-num">${d}</span>
-                    ${bh.length ? `<div style="font-size:10px;color:#6BCB77;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${bh[0]}</div>` : ''}
+                    ${bh.length ? `<div style="font-size:10px;color:#6BCB77;margin-top:2px;line-height:1.4">${bh.join('<br>')}</div>` : ''}
                     <div class="dots">${dots}</div>
                     ${people.length > 1 ? '<div class="overlap-dot"></div>' : ''}
                     </div>`;
