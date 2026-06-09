@@ -382,38 +382,57 @@
             max-width: 200px;
         }
 
+         .custom-tooltip {
+        position: fixed;
+        background: #2a2a3e;
+        border: 1px solid #3a3a4e;
+        border-radius: 8px;
+        padding: 8px 12px;
+        z-index: 300;
+        pointer-events: none;
+        font-size: 12px;
+        color: #ddd;
+        line-height: 1.8;
+        box-shadow: 0 4px 12px #00000066;
+        display: none;
+        max-width: 220px;
+        }
+
         @media (max-width: 600px) {
-  header { flex-direction: column; gap: 10px; align-items: flex-start; }
-  .tabs { width: 100%; display: flex; justify-content: space-between; }
-  .tabs button { font-size: 11px; padding: 6px 8px; }
-  .person-bar { gap: 8px; }
-  .person-bar label { display: none; }
-  .chip { padding: 4px 10px; font-size: 12px; }
-  .hint { display: none; }
-  .cal-nav h2 { font-size: 16px; min-width: 150px; }
-  .day-header { font-size: 9px; padding: 4px 0; }
-  .day-cell { min-height: 48px; padding: 4px; }
-  .day-num { font-size: 11px; }
-  .dot { width: 7px; height: 7px; }
-  .overlap-dot { width: 5px; height: 5px; }
-  .day-cell div[style*="font-size:10px"] { display: none; }
-  .legend { gap: 8px; }
-  .legend-item { font-size: 11px; }
-  .view { padding: 12px; }
-  .calWrap, .cal-wrap { padding: 12px; }
-  .overlap-alert { font-size: 11px; }
-  .overlap-badge { font-size: 10px; }
-  .person-block-header { flex-direction: column; align-items: flex-start; gap: 4px; }
-  .day-tags { gap: 6px; }
-  .day-tag { font-size: 12px; padding: 3px 8px; }
-  .add-row { flex-direction: column; }
-  .add-btn { width: 100%; padding: 10px; }
-  input { width: 100%; }
-}
+        header { flex-direction: column; gap: 10px; align-items: flex-start; }
+        .tabs { width: 100%; display: flex; justify-content: space-between; }
+        .tabs button { font-size: 11px; padding: 6px 8px; }
+        .person-bar { gap: 8px; }
+        .person-bar label { display: none; }
+        .chip { padding: 4px 10px; font-size: 12px; }
+        .hint { display: none; }
+        .cal-nav h2 { font-size: 16px; min-width: 150px; }
+        .day-header { font-size: 9px; padding: 4px 0; }
+        .day-cell { min-height: 48px; padding: 4px; }
+        .day-num { font-size: 11px; }
+        .dot { width: 7px; height: 7px; }
+        .overlap-dot { width: 5px; height: 5px; }
+        .day-cell div[style*="font-size:10px"] { display: none; }
+        .legend { gap: 8px; }
+        .legend-item { font-size: 11px; }
+        .view { padding: 12px; }
+        .calWrap, .cal-wrap { padding: 12px; }
+        .overlap-alert { font-size: 11px; }
+        .overlap-badge { font-size: 10px; }
+        .person-block-header { flex-direction: column; align-items: flex-start; gap: 4px; }
+        .day-tags { gap: 6px; }
+        .day-tag { font-size: 12px; padding: 3px 8px; }
+        .add-row { flex-direction: column; }
+        .add-btn { width: 100%; padding: 10px; }
+        input { width: 100%; }
+        }
 
     </style>
 </head>
 <body>
+
+    <div id="custom-tooltip" class="custom-tooltip"></div>
+
     <!-- First visit modal -->
     <div id="welcome-modal" style="display:none;position:fixed;inset:0;background:#00000088;z-index:200;align-items:center;justify-content:center">
         <div style="background:#1a1a2e;border:1px solid #2a2a3e;border-radius:12px;padding:28px;max-width:420px;width:90%">
@@ -699,13 +718,13 @@
                 const bh = bankHolidays[key] || [];
                 const dots = people.slice(0, 4).map(p => `<span class="dot" style="background:${personColor(p)}" title="${p}"></span>`).join('');
                 html += `<div class="day-cell ${isWeekend ? 'weekend' : ''} ${isToday ? 'today' : ''} ${bh.length ? 'bank-holiday' : ''}"
-                     ${!isWeekend ? `onclick="toggleDay(${year},${month},${d})"` : ''}
-                     ${bh.length ? `title="${bh.join(', ')}"` : ''}>
-                    <span class="day-num">${d}</span>
-                    ${bh.length ? `<div style="font-size:10px;color:#6BCB77;margin-top:2px;line-height:1.4">${bh.join('<br>')}</div>` : ''}
-                    <div class="dots">${dots}</div>
-                    ${people.length > 1 ? '<div class="overlap-dot"></div>' : ''}
-                    </div>`;
+                ${!isWeekend ? `onclick="toggleDay(${year},${month},${d})"` : ''}
+                onmouseleave="hideTooltip()">
+                <span class="day-num">${d}</span>
+                ${bh.length ? `<div style="font-size:10px;color:#6BCB77;margin-top:2px;line-height:1.4">${bh.join('<br>')}</div>` : ''}
+                <div class="dots">${dots}</div>
+                ${people.length > 1 ? '<div class="overlap-dot"></div>' : ''}
+                </div>`;
             }
 
             const emptyState = holidays.length === 0
@@ -714,6 +733,19 @@
                      </div>`
                 : '';
             document.getElementById('cal-grid').innerHTML = html + emptyState;
+
+            document.querySelectorAll('.day-cell').forEach((cell) => {
+            const dayNum = cell.querySelector('.day-num');
+            if (!dayNum) return;
+            const d = parseInt(dayNum.textContent);
+            if (isNaN(d)) return;
+            const people = getDayPeople(year, month, d);
+            const key = toKey(year, month, d);
+            const bh = bankHolidays[key] || [];
+            if (people.length || bh.length) {
+                cell.addEventListener('mouseenter', (e) => showTooltip(e, people, bh));
+            }
+            });
 
             // Legend
             const bhCount = Object.keys(bankHolidays).filter(k => {
@@ -810,6 +842,22 @@
         if (e.key === 'ArrowLeft') prevMonth();
         if (e.key === 'ArrowRight') nextMonth();
         });
+        function showTooltip(e, people, bh) {
+        const lines = [
+                        ...people.map(p => `<span style="display:inline-block;width:8px;height:8px;border-radius:50%;background:${personColor(p)};margin-right:6px"></span>${p}`),
+                        ...bh
+                    ];
+                    if (!lines.length) return;
+                    const t = document.getElementById('custom-tooltip');
+                    t.innerHTML = lines.join('<br>');
+                    t.style.left = (e.clientX + 12) + 'px';
+                    t.style.top = (e.clientY - 10) + 'px';
+                    t.style.display = 'block';
+                    }
+
+                    function hideTooltip() {
+                    document.getElementById('custom-tooltip').style.display = 'none';
+                    }           
         load();
     </script>
     <!-- Collapsible help section -->
