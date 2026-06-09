@@ -427,6 +427,21 @@
         input { width: 100%; }
         }
 
+        @media print {
+        header, .person-bar, .tabs, .cal-nav button, #help-toggle { display: none !important; }
+        body { background: #fff; color: #000; }
+        .day-cell { border: 1px solid #ddd; background: #fff !important; }
+        .day-num { color: #000; }
+        .bank-holiday { background: #f0fff0 !important; }
+        .weekend { background: #f9f9f9 !important; opacity: 1 !important; }
+        .today { border: 2px solid #4D96FF !important; }
+        .overlap-dot { background: #ff0000; }
+        .view { display: none !important; }
+        #calendar { display: block !important; padding: 0; }
+        .legend-name { color: #000; }
+        .legend-count { color: #555; }
+        }
+
     </style>
 </head>
 <body>
@@ -450,15 +465,15 @@
             <button onclick="closeWelcome()" style="margin-top:20px;background:#4D96FF;border:none;color:#fff;padding:10px 24px;border-radius:8px;cursor:pointer;font-weight:600;width:100%">Got it!</button>
         </div>
     </div>
-    <header>
-        <h1>🏖 Team Holidays</h1>
-        <div class="tabs">
-            <button class="active" onclick="switchView('calendar')">📅 Calendar</button>
-            <button onclick="switchView('list')">📋 List</button>
-            <button onclick="switchView('settings')">⚙️ Team</button>
-            <button onclick="switchView('about')">ℹ️ About</button>
-        </div>
-    </header>
+   <header>
+  <h1>🏖 Team Holidays</h1>
+  <div class="tabs">
+    <button class="active" onclick="switchView('calendar')">📅 Calendar</button>
+    <button onclick="switchView('list')">📋 List</button>
+    <button onclick="switchView('settings')">⚙️ Team</button>
+    <button onclick="switchView('about')">ℹ️ About</button>
+  </div>
+</header>
 
     <div class="person-bar">
         <label>Who are you?</label>
@@ -857,7 +872,36 @@
 
                     function hideTooltip() {
                     document.getElementById('custom-tooltip').style.display = 'none';
-                    }           
+                    }   
+                    
+        function printCalendar() {
+        window.print();
+        }
+
+        function exportCSV() {
+        if (holidays.length === 0) {
+            alert('No holidays to export.');
+            return;
+        }
+
+        const rows = [['Person', 'Date', 'Day']];
+        const sorted = [...holidays].sort((a, b) => a.date.localeCompare(b.date));
+        
+        sorted.forEach(h => {
+            const date = new Date(h.date);
+            const day = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'][date.getDay()];
+            rows.push([h.person, h.date, day]);
+        });
+
+        const csv = rows.map(r => r.join(',')).join('\n');
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `team-holidays-${new Date().toISOString().slice(0,10)}.csv`;
+        a.click();
+        URL.revokeObjectURL(url);
+        }
         load();
     </script>
     <!-- Collapsible help section -->
@@ -876,5 +920,10 @@
             <p style="margin-top:8px;color:#888">🗓 Bank holidays for 🇬🇧 UK, 🇷🇴 Romania and 🇮🇳 India are shown automatically in green on the calendar.</p>
         </div>
     </div>
+<div style="position:fixed;bottom:20px;right:20px;display:flex;gap:8px;z-index:100">
+  <button onclick="exportCSV()" style="background:#2a2a3e;border:1px solid #3a3a4e;color:#aaa;padding:8px 14px;border-radius:8px;cursor:pointer;font-size:12px;box-shadow:0 2px 8px #00000066">⬇ CSV</button>
+  <button onclick="printCalendar()" style="background:#2a2a3e;border:1px solid #3a3a4e;color:#aaa;padding:8px 14px;border-radius:8px;cursor:pointer;font-size:12px;box-shadow:0 2px 8px #00000066">🖨 Print</button>
+</div>
+
 </body>
 </html>
