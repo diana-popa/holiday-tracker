@@ -382,6 +382,35 @@
             max-width: 200px;
         }
 
+        @media (max-width: 600px) {
+  header { flex-direction: column; gap: 10px; align-items: flex-start; }
+  .tabs { width: 100%; display: flex; justify-content: space-between; }
+  .tabs button { font-size: 11px; padding: 6px 8px; }
+  .person-bar { gap: 8px; }
+  .person-bar label { display: none; }
+  .chip { padding: 4px 10px; font-size: 12px; }
+  .hint { display: none; }
+  .cal-nav h2 { font-size: 16px; min-width: 150px; }
+  .day-header { font-size: 9px; padding: 4px 0; }
+  .day-cell { min-height: 48px; padding: 4px; }
+  .day-num { font-size: 11px; }
+  .dot { width: 7px; height: 7px; }
+  .overlap-dot { width: 5px; height: 5px; }
+  .day-cell div[style*="font-size:10px"] { display: none; }
+  .legend { gap: 8px; }
+  .legend-item { font-size: 11px; }
+  .view { padding: 12px; }
+  .calWrap, .cal-wrap { padding: 12px; }
+  .overlap-alert { font-size: 11px; }
+  .overlap-badge { font-size: 10px; }
+  .person-block-header { flex-direction: column; align-items: flex-start; gap: 4px; }
+  .day-tags { gap: 6px; }
+  .day-tag { font-size: 12px; padding: 3px 8px; }
+  .add-row { flex-direction: column; }
+  .add-btn { width: 100%; padding: 10px; }
+  input { width: 100%; }
+}
+
     </style>
 </head>
 <body>
