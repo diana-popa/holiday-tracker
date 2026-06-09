@@ -108,6 +108,8 @@
                 font-size: 20px;
             }
 
+            .cal-nav button.today-btn { width: auto; font-size: 14px; padding: 0 20px; color: #aaa; }
+
             .cal-nav h2 {
                 font-size: 22px;
                 min-width: 200px;
@@ -483,9 +485,10 @@
 
     <div id="calendar" class="view active">
         <div class="cal-nav">
-            <button onclick="prevMonth()">‹</button>
-            <h2 id="cal-title"></h2>
-            <button onclick="nextMonth()">›</button>
+        <button onclick="prevMonth()">‹</button>
+        <h2 id="cal-title"></h2>
+        <button onclick="nextMonth()">›</button>
+        <button class="today-btn" onclick="goToToday()">Today</button>
         </div>
         <div id="overlap-alert" class="overlap-alert" style="display:none"></div>
         <div class="grid" id="cal-grid"></div>
@@ -902,6 +905,12 @@
         a.click();
         URL.revokeObjectURL(url);
         }
+        function goToToday() {
+        year = today.getFullYear();
+        month = today.getMonth();
+        loadBankHolidays(year).then(renderCalendar);
+        }
+
         load();
     </script>
     <!-- Collapsible help section -->
