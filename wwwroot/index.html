@@ -776,7 +776,11 @@
                 }
             }));
         }
-
+        document.addEventListener('keydown', (e) => {
+        if (document.activeElement.tagName === 'INPUT') return;
+        if (e.key === 'ArrowLeft') prevMonth();
+        if (e.key === 'ArrowRight') nextMonth();
+        });
         load();
     </script>
     <!-- Collapsible help section -->
