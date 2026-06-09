@@ -501,58 +501,81 @@
     </div>
 
     <div id="about" class="view" style="max-width:680px">
-        <h2>About This App</h2>
-        <div style="background:#1a1a2e;border-radius:10px;padding:20px;margin-bottom:16px">
-            <h3 style="color:#4D96FF;font-size:15px;margin-bottom:10px">🔍 The Problem</h3>
-            <p style="color:#bbb;font-size:14px;line-height:1.7">Small scrum teams within larger organisations often lack a simple way to track holidays at team level. Company-wide tools like Workday operate at a broader organisational level and don't give a scrum team instant visibility of who is off and when. As a workaround, teams resort to manually maintaining a shared list in a Slack tab — which is error prone, hard to read, and gives no visual indication of overlaps that could impact sprint planning and day to day collaboration.</p>
-        </div>
+  <h2>About This App</h2>
+  <div style="background:#1a1a2e;border-radius:10px;padding:20px;margin-bottom:16px">
+    <h3 style="color:#4D96FF;font-size:15px;margin-bottom:10px">🔍 The Problem</h3>
+    <p style="color:#bbb;font-size:14px;line-height:1.7">Small scrum teams within larger organisations often lack a simple way to track holidays at team level. Company-wide tools like Workday operate at a broader organisational level and don't give a scrum team instant visibility of who is off and when. As a workaround, teams resort to manually maintaining a shared list in a Slack tab — which is error prone, hard to read, and gives no visual indication of overlaps that could impact sprint planning and day to day collaboration.</p>
+  </div>
 
-        <div style="background:#1a1a2e;border-radius:10px;padding:20px;margin-bottom:16px">
-            <h3 style="color:#4D96FF;font-size:15px;margin-bottom:10px">💡 The Solution</h3>
-            <p style="color:#bbb;font-size:14px;line-height:1.7">Team Holiday Tracker is a lightweight internal web app built specifically for a small scrum team. It gives the team a shared calendar view of all holidays, automatically highlights days where multiple people are off simultaneously, and integrates with Slack to keep the team informed without any extra effort. Bank holidays for UK, Romania and India are displayed automatically so the team always has full context when planning. No installation required — just a browser and a link.</p>
-        </div>
+  <div style="background:#1a1a2e;border-radius:10px;padding:20px;margin-bottom:16px">
+    <h3 style="color:#4D96FF;font-size:15px;margin-bottom:10px">💡 The Solution</h3>
+    <p style="color:#bbb;font-size:14px;line-height:1.7">Team Holiday Tracker is a lightweight internal web app built specifically for a small scrum team. It gives the team a shared calendar view of all holidays, automatically highlights days where multiple people are off simultaneously, and integrates with Slack to keep the team informed without any extra effort. Bank holidays for UK, Romania and India are displayed automatically so the team always has full context when planning. No installation required — just a browser and a link.</p>
+  </div>
 
-        <div style="background:#1a1a2e;border-radius:10px;padding:20px;margin-bottom:16px">
-            <h3 style="color:#4D96FF;font-size:15px;margin-bottom:10px">✨ Key Features</h3>
-            <ul style="color:#bbb;font-size:14px;line-height:2;padding-left:20px">
-                <li>Calendar view with colour coded holidays per person</li>
-                <li>Overlap detection with red indicator and summary banner</li>
-                <li>Bank holidays for 🇬🇧 UK, 🇷🇴 Romania and<span style='font-size:9px;background:#F4A261;color:#000;padding:1px 3px;border-radius:3px;margin-right:3px'>IN</span> India shown automatically</li>
-                <li>Slack notifications on holiday addition and weekly Monday summary</li>
-                <li>Team management — add or remove members via the settings tab</li>
-                <li>Data persistence — holidays survive app restarts</li>
-                <li>No individual logins required</li>
-            </ul>
-        </div>
+  <div style="background:#1a1a2e;border-radius:10px;padding:20px;margin-bottom:16px">
+    <h3 style="color:#4D96FF;font-size:15px;margin-bottom:10px">✨ Key Features</h3>
+    <ul style="color:#bbb;font-size:14px;line-height:2;padding-left:20px">
+      <li>Calendar view with colour coded holidays per person</li>
+      <li>Overlap detection with red indicator and summary banner</li>
+      <li>Bank holidays for UK, Romania and India shown automatically</li>
+      <li>Slack notifications on holiday addition and weekly Monday summary</li>
+      <li>Team management — add or remove members via the settings tab</li>
+      <li>CSV export and print friendly calendar view</li>
+      <li>Keyboard navigation — left and right arrow keys to change months</li>
+      <li>Mobile responsive layout</li>
+      <li>Data persistence — holidays survive app restarts</li>
+      <li>No individual logins required</li>
+    </ul>
+  </div>
 
-        <div style="background:#1a1a2e;border-radius:10px;padding:20px;margin-bottom:16px">
-            <h3 style="color:#4D96FF;font-size:15px;margin-bottom:10px">🛠 Tech Stack</h3>
-            <ul style="color:#bbb;font-size:14px;line-height:2;padding-left:20px">
-                <li>Backend: ASP.NET Core 8 (C#)</li>
-                <li>Database: SQLite via Entity Framework Core</li>
-                <li>Frontend: Vanilla HTML, CSS and JavaScript</li>
-                <li>Notifications: Slack Incoming Webhooks</li>
-                <li>Bank Holidays: Nager.Date API and hardcoded Indian holidays</li>
-                <li>Testing: MSTest — 33 unit tests</li>
-                <li>Hosting: Railway (Docker)</li>
-                <li>Source Control: GitHub (private)</li>
-            </ul>
-        </div>
+  <div style="background:#1a1a2e;border-radius:10px;padding:20px;margin-bottom:16px">
+    <h3 style="color:#4D96FF;font-size:15px;margin-bottom:10px">🛠 Tech Stack</h3>
+    <ul style="color:#bbb;font-size:14px;line-height:2;padding-left:20px">
+      <li>Backend: ASP.NET Core 8 (C#)</li>
+      <li>Database: SQLite via Entity Framework Core</li>
+      <li>Frontend: Vanilla HTML, CSS and JavaScript</li>
+      <li>Notifications: Slack Incoming Webhooks</li>
+      <li>Bank Holidays: Nager.Date API (UK, Romania) and hardcoded Indian holidays</li>
+      <li>Testing: MSTest — 33 unit tests covering data, service and controller layers</li>
+      <li>Hosting: Railway (Docker)</li>
+      <li>Source Control: GitHub (private)</li>
+    </ul>
+  </div>
 
-        <div style="background:#1a1a2e;border-radius:10px;padding:20px">
-            <h3 style="color:#4D96FF;font-size:15px;margin-bottom:10px">🚀 Planned Next Steps</h3>
-            <ul style="color:#bbb;font-size:14px;line-height:2;padding-left:20px">
-                <li>Migrate to Azure App Service and Azure SQL</li>
-                <li>Add individual logins with role based access</li>
-                <li>Secure secrets via Azure Key Vault</li>
-                <li>Persistent shared database to replace SQLite</li>
-                <li>Jira integration - Connect holidays directly to Jira and make capacity and velocity adjustments, show impact and warnings</li>
-            </ul>
-        </div>
+  <div style="background:#1a1a2e;border-radius:10px;padding:20px;margin-bottom:16px">
+    <h3 style="color:#4D96FF;font-size:15px;margin-bottom:10px">🚀 Planned Next Steps</h3>
+    <ul style="color:#bbb;font-size:14px;line-height:2;padding-left:20px">
+      <li>Migrate to Azure App Service and Azure SQL for proper company infrastructure</li>
+      <li>Add individual logins with role based access — Member and Admin roles</li>
+      <li>Secure secrets via Azure Key Vault</li>
+      <li>Persistent shared database to replace SQLite</li>
+      <li>Frontend integration tests via Playwright</li>
+    </ul>
+  </div>
 
-        <p style="color:#555;font-size:12px;margin-top:16px;text-align:center">Built with Claude · Vibecoded for a scrum team 🏖</p>
+  <div style="background:#1a1a2e;border-radius:10px;padding:20px;margin-bottom:16px">
+    <h3 style="color:#4D96FF;font-size:15px;margin-bottom:10px">🗺 Roadmap</h3>
+    <p style="color:#bbb;font-size:14px;line-height:1.7;margin-bottom:12px">This app is the first part of a broader potential project aimed at giving scrum teams better visibility and control over their capacity. The current version solves the immediate problem of holiday visibility. Future phases could expand this into a lightweight team capacity management tool.</p>
+    <div style="border-left:3px solid #4D96FF;padding-left:14px;margin-bottom:12px">
+      <p style="color:#fff;font-size:13px;font-weight:700;margin-bottom:4px">Phase 1 — Holiday Visibility (current)</p>
+      <p style="color:#bbb;font-size:13px;line-height:1.6">Calendar view, overlap detection, Slack integration, bank holidays, export. Deployed and in use by the team.</p>
     </div>
+    <div style="border-left:3px solid #FFD93D;padding-left:14px;margin-bottom:12px">
+      <p style="color:#fff;font-size:13px;font-weight:700;margin-bottom:4px">Phase 2 — Access Control & Infrastructure</p>
+      <p style="color:#bbb;font-size:13px;line-height:1.6">Individual logins with Member and Admin roles. Migration to Azure App Service and Azure SQL. Secrets management via Azure Key Vault.</p>
+    </div>
+    <div style="border-left:3px solid #6BCB77;padding-left:14px;margin-bottom:12px">
+      <p style="color:#fff;font-size:13px;font-weight:700;margin-bottom:4px">Phase 3 — Jira Integration</p>
+      <p style="color:#bbb;font-size:13px;line-height:1.6">Connect to Jira to surface holiday data directly in sprint planning. Flag when an assignee is off during a ticket's due date. Warn during sprint planning if team capacity is reduced due to holidays. Post automatic Jira comments when a team member logs a holiday that overlaps an active sprint.</p>
+    </div>
+    <div style="border-left:3px solid #FF6B6B;padding-left:14px">
+      <p style="color:#fff;font-size:13px;font-weight:700;margin-bottom:4px">Phase 4 — Team Capacity Dashboard</p>
+      <p style="color:#bbb;font-size:13px;line-height:1.6">Visual sprint capacity chart showing available team days per sprint accounting for holidays. Historical analytics — busiest holiday periods, average days taken per person, team availability trends.</p>
+    </div>
+  </div>
 
+  <p style="color:#555;font-size:12px;margin-top:16px;text-align:center">Built with Claude · Vibecoded for a scrum team 🏖</p>
+</div>
     <div id="settings" class="view">
         <h2>Manage Team</h2>
         <div class="team-list" id="team-list"></div>
